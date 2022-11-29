@@ -4,13 +4,13 @@ package com.xu.community.entity;
  * 作用：封装分页相关的信息
  */
 public class Page {
-    //当前页码
+    // 当前页码
     private int current = 1;
-    //每页最大显示数量
+    // 每页最大显示数量
     private int limit = 10;
-    //贴子总数(用于计算总页数)
+    // 贴子总数(用于计算总页数)
     private int rows;
-    //查询路径（用于复用分页链接）
+    // 查询路径（用于复用分页链接）
     private String staticPath;
 
     public int getCurrent() {

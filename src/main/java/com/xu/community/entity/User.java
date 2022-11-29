@@ -97,17 +97,9 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", salt='" + salt + '\'' +
-                ", email='" + email + '\'' +
-                ", type=" + type +
-                ", status=" + status +
-                ", activationCode='" + activationCode + '\'' +
-                ", headerUrl='" + headerUrl + '\'' +
-                ", createTime=" + createTime +
-                '}';
+        return "User{" + "id=" + id + ", " + "username='" + username + '\'' + ", " + "password='" + password + '\''
+            + ", " + "salt='" + salt + '\'' + ", email='" + email + '\'' + ", type=" + type + ", status=" + status
+            + ", activationCode='" + activationCode + '\'' + ", headerUrl='" + headerUrl + '\'' + ", createTime="
+            + createTime + '}';
     }
 }
