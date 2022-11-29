@@ -66,6 +66,13 @@
             <artifactId>spring-boot-starter-mail</artifactId>
             <version>2.7.2</version>
         </dependency>
+        <!--commons包：用于帮助判断字符串和集合等数据空值的情况-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.10</version>
+        </dependency>
+
     </dependencies>
 
     <build>
