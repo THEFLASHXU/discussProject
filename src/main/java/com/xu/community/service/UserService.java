@@ -2,6 +2,7 @@ package com.xu.community.service;
 
 import com.xu.community.dao.UserMapper;
 import com.xu.community.entity.User;
+import com.xu.community.util.CommunityConstant;
 import com.xu.community.util.CommunityUtil;
 import com.xu.community.util.MailClient;
 import org.apache.commons.lang3.StringUtils;
@@ -16,8 +17,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * 实现CommunityConstant是为了使用该接口中代表激活状态的成员变量
+ */
 @Service
-public class UserService {
+public class UserService implements CommunityConstant {
     @Autowired
     private UserMapper userMapper;
     //邮件工具
@@ -66,6 +70,7 @@ public class UserService {
             return map;
         }
         //验证邮箱
+        u = userMapper.selectByEmail(user.getEmail());
         if (u!=null){
             map.put("emailMsg","该邮箱已被注册 ");
             return map;
@@ -90,5 +95,25 @@ public class UserService {
         String content=templateEngine.process("/mail/activation",context);
         mailClient.sendMail(user.getEmail(),"激活账号邮件",content);
         return map;
+    }
+
+    /**
+     * 点击邮箱激活链接激活账号
+     * @param userId
+     * @param code
+     * @return
+     */
+    public int activation(int userId,String code){
+        User user=userMapper.selectById(userId);
+        //System.out.println("激活码："+user.getActivationCode());
+        //System.out.println(code);
+        if (user.getStatus()==1){
+            return ACTIVATION_REPEAT;
+        }else if (user.getActivationCode().equals(code)){
+            userMapper.updateStatus(userId,1);
+            return ACTIVATION_SUCCESS;
+        }else{
+            return ACTIVATION_FAILURE;
+        }
     }
 }

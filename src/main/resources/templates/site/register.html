@@ -92,7 +92,7 @@
                         <!--th:value作用：设置输入框中的默认值，当用户注册失败时仍然会跳转回这个页面，因此，判断由用户注册信息组成的user对象是否为空，通过user对象中的信息创建默认值-->
                         <input name="password" type="password" class="form-control" id="password" placeholder="请输入您的密码!"
                                th:value="${user!=null?user.password:''}"
-                               th:class="|form-control ${passwordMsg!=null?'is-valid':''}|"
+                               th:class="|form-control ${passwordMsg!=null?'is-invalid':''}|"
                                required>
                         <div class="invalid-feedback" th:text="${passwordMsg}">
                             密码长度不能小于8位!
@@ -115,7 +115,7 @@
                     <div class="col-sm-10">
                         <input name="email" type="email" class="form-control" id="email" placeholder="请输入您的邮箱!"
                                th:value="${user!=null?user.email:''}"
-                               th:class="|form-control ${passwordMsg!=null?'is-valid':''}|"
+                               th:class="|form-control ${emailMsg!=null?'is-invalid':''}|"
                                required>
                         <div class="invalid-feedback" th:text="${emailMsg}">
                             该邮箱已注册!
