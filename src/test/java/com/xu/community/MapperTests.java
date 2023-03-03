@@ -1,8 +1,10 @@
 package com.xu.community;
 
 import com.xu.community.dao.DiscussPostMapper;
+import com.xu.community.dao.LoginTicketMapper;
 import com.xu.community.dao.UserMapper;
 import com.xu.community.entity.DiscussPost;
+import com.xu.community.entity.LoginTicket;
 import com.xu.community.entity.User;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -22,11 +24,15 @@ public class MapperTests {
     private UserMapper userMapper;
     @Resource
     private DiscussPostMapper discussPostMapper;
+    @Resource
+    private LoginTicketMapper loginTicketMapper;
+
     @Test
-    public void testSelectUser(){
-        User user=userMapper.selectById(101);
+    public void testSelectUser() {
+        User user = userMapper.selectById(101);
         System.out.println(user);
     }
+
     @Test
     public void testInsertUser() {
         User user = new User();
@@ -41,6 +47,7 @@ public class MapperTests {
         System.out.println(rows);
         System.out.println(user.getId());
     }
+
     @Test
     public void updateUser() {
         int rows = userMapper.updateStatus(150, 1);
@@ -52,13 +59,35 @@ public class MapperTests {
         rows = userMapper.updatePassword(150, "hello");
         System.out.println(rows);
     }
+
     @Test
     public void testSelectPosts() {
         List<DiscussPost> list = discussPostMapper.selectDiscussPosts(0, 0, 10);
         for (DiscussPost post : list) {
             System.out.println(post);
         }
-        int rows=discussPostMapper.selectDiscussPostRows(0);
+        int rows = discussPostMapper.selectDiscussPostRows(0);
         System.out.println(rows);
+    }
+
+    @Test
+    public void testInsertLoginTicket() {
+        LoginTicket loginTicket = new LoginTicket();
+        loginTicket.setUserId(101);
+        loginTicket.setTicket("abc");
+        loginTicket.setStatus(0);
+        loginTicket.setExpired(new Date(System.currentTimeMillis() + 1000 * 60 * 10));
+
+        loginTicketMapper.insertLoginTicket(loginTicket);
+    }
+    @Test
+    public void testSelectLoginTicket(){
+        LoginTicket loginTicket=loginTicketMapper.selectByTicket("abc");
+        System.out.println(loginTicket);
+
+        loginTicketMapper.updateStatus("abc",1);
+        loginTicket=loginTicketMapper.selectByTicket("abc");
+        System.out.println(loginTicket);
+
     }
 }
