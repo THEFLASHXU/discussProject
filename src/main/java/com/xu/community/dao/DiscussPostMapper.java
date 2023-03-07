@@ -27,4 +27,25 @@ public interface DiscussPostMapper {
      * 如果只有一个参数，并且在<if>里使用，则必须加别名。
      */
     int selectDiscussPostRows(@Param("userId") int userId);
+
+    /**
+     * 功能：发布帖子
+     * @param discussPost 帖子实体
+     */
+    int insertDiscussPost(DiscussPost discussPost);
+
+    /**
+     * 功能：查询帖子详情
+     * @param id
+     * @return
+     */
+    DiscussPost selectDiscussPostById(int id);
+
+    /**
+     * 更新帖子评论的数量
+     * @param id
+     * @param commentCount
+     * @return
+     */
+    int updateCommentCount(int id, int commentCount);
 }
