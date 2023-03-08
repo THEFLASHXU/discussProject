@@ -2,12 +2,15 @@ package com.xu.community;
 
 import com.xu.community.dao.DiscussPostMapper;
 import com.xu.community.dao.LoginTicketMapper;
+import com.xu.community.dao.MessageMapper;
 import com.xu.community.dao.UserMapper;
 import com.xu.community.entity.DiscussPost;
 import com.xu.community.entity.LoginTicket;
+import com.xu.community.entity.Message;
 import com.xu.community.entity.User;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -26,7 +29,8 @@ public class MapperTests {
     private DiscussPostMapper discussPostMapper;
     @Resource
     private LoginTicketMapper loginTicketMapper;
-
+    @Autowired
+    private MessageMapper messageMapper;
     @Test
     public void testSelectUser() {
         User user = userMapper.selectById(101);
@@ -89,5 +93,22 @@ public class MapperTests {
         loginTicket=loginTicketMapper.selectByTicket("abc");
         System.out.println(loginTicket);
 
+    }
+    @Test
+    public void  testSelectLetters(){
+        List<Message> list = messageMapper.selectConversations(111, 0, 20);
+        for (Message m : list) {
+            System.out.println(m);
+        }
+        int count=messageMapper.selectConversationCount(111);
+        System.out.println(count);
+        list = messageMapper.selectLetters("111_112", 0, 10);
+        for (Message m : list) {
+            System.out.println(m);
+        }
+        count = messageMapper.selectLetterCount("111_112");
+        System.out.println(count);
+        count=messageMapper.selectLetterUnreadCount(131,"111_131");
+        System.out.println(count);
     }
 }

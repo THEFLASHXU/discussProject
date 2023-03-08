@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xu.community.dao.MessageMapper">
+    <sql id="selectFields">
+        id, from_id, to_id, conversation_id, content, status, create_time
+    </sql>
+
+    <sql id="insertFields">
+        from_id, to_id, conversation_id, content, status, create_time
+    </sql>
+    <!--查询当前用户会话列表中最新的一条私信-->
+    <select id="selectConversations" resultType="Message">
+        select
+        <include refid="selectFields"></include>
+        from message
+        where id in (
+        select max(id) from message
+        where status != 2 -- 私信没被删除
+        and from_id != 1 -- 排除系统用户发送的系统通知私信
+        and (from_id = #{userId} or to_id = #{userId}) -- 只查询当前登录用户的私信
+        group by conversation_id -- 按会话id分组
+        )
+        order by id desc
+        limit #{offset}, #{limit} -- 分页限制
+    </select>
+    <!--查询当前用户的会话数量-->
+    <select id="selectConversationCount" resultType="int">
+        select count(m.maxid)-- 统计子查询的id数量就能知道有多少个会话
+        from (
+            --  子查询，命名为m
+            select max(id) as maxid-- 查询当前用户所有会话的最新私信的id
+            from message
+            where status != 2
+                and from_id != 1
+                and (from_id = #{userId}
+                     or to_id = #{userId})
+                group by conversation_id
+            ) as m
+    </select>
+    <!--查询某一对话中的全部私信数量-->
+    <select id="selectLetters" resultType="Message">
+        select <include refid="selectFields"></include>
+        from message
+        where status != 2
+        and from_id != 1
+        and conversation_id = #{conversationId}
+        order by id desc
+        limit #{offset}, #{limit}
+    </select>
+    <!--查询某个会话所包含的私信数量-->
+    <select id="selectLetterCount" resultType="int">
+        select count(id)
+        from message
+        where status != 2
+        and from_id != 1
+        and conversation_id = #{conversationId}
+    </select>
+    <!--查询未读私信的数量
+    动态拼接对话id，因为并不是一定会传递这个参数，当查询所有未读私信数量的时候就不需要，查每个对话中未读私信的数量时就需要
+    -->
+    <select id="selectLetterUnreadCount" resultType="int">
+        select count(id)
+        from message
+        where status = 0
+        and from_id != 1
+        and to_id = #{userId}
+        <if test="conversationId!=null">
+            -- 动态拼接对话id，因为并不是一定会传递这个参数，当查询所有未读私信数量的时候就不需要，查每个对话中未读私信的数量时就需要
+            and conversation_id = #{conversationId}
+        </if>
+    </select>
+    <!--新增一条私信-->
+    <insert id="insertMessage" parameterType="Message" keyProperty="id">
+        insert into message(<include refid="insertFields"></include>)
+        values(#{fromId},#{toId},#{conversationId},#{content},#{status},#{createTime})
+    </insert>
+    <!--修改私信的状态
+        传入进来的ids是由多个id组成的集合，需要遍历集合中的每一项。mybatis中提供了遍历集合的功能，使用foreach标签，collection="遍历集合名字"
+        item="遍历每一项的名字" open="包裹遍历内容的开始符号" close="包裹遍历内容的结束符号" separator="分割遍历每一项的符号。"
+    -->
+    <update id="updateStatus">
+        update message set status = #{status}
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>
