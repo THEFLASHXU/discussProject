@@ -2,6 +2,7 @@ package com.xu.community.controller;
 
 import com.xu.community.annotation.LoginRequired;
 import com.xu.community.entity.User;
+import com.xu.community.service.FollowService;
 import com.xu.community.service.LikeService;
 import com.xu.community.service.UserService;
 import com.xu.community.util.CommunityConstant;
@@ -45,6 +46,8 @@ public class UserController implements CommunityConstant {
     private HostHolder hostHolder;
 	@Autowired
 	private LikeService likeService;
+	@Autowired
+	private FollowService followService;
 
     /**
      * 功能：跳转到用户信息设置的页面
@@ -121,8 +124,10 @@ public class UserController implements CommunityConstant {
 		}
 
 	}
+
+
 	/**
-	 * 功能：处理个人主页请求
+	 * 功能：处理个人主页请求，查询与用户有关的数据（用户实体信息，点赞信息，关注信息）
 	 */
 	@RequestMapping(path = "/profile/{userId}",method = RequestMethod.GET)
 	public String getProfilePage(@PathVariable("userId") int userId, Model model) {
@@ -135,7 +140,18 @@ public class UserController implements CommunityConstant {
 		// 点赞数量
 		int likeCount = likeService.findUserLikeCount(userId);
 		model.addAttribute("likeCount", likeCount);
-
+		//关注数量
+		long followeeCount=followService.findFolloweeCount(userId, ENTITY_TYPE_USER);
+		model.addAttribute("followeeCount", followeeCount);
+		// 粉丝数量
+		long followerCount = followService.findFollowerCount(ENTITY_TYPE_USER, userId);
+		model.addAttribute("followerCount", followerCount);
+		// 当前登录用户对这个用户是否已关注
+		boolean hasFollowed=false;//默认是未关注，因为还要根据用户是否登录进一步判断
+		if (hostHolder.getUser() != null) {//如果用户已登录，则进行判断
+			hasFollowed= followService.hasFollowed(hostHolder.getUser().getId(),ENTITY_TYPE_USER,userId);
+		}
+		model.addAttribute("hasFollowed", hasFollowed);
 		return "/site/profile";
 	}
 }

@@ -29,7 +29,8 @@ public class HomeController implements CommunityConstant {
     private LikeService likeService;
 
     /**
-     * 方法功能：查询 path = "/index" 指的是访问路径，浏览器访问这个路径的时候就会调用这个函数。 method= RequestMethod.GET 指的是请求方式，查询
+     * 方法功能：展示首页的帖子
+     * path = "/index" 指的是访问路径，浏览器访问这个路径的时候就会调用这个函数。 method= RequestMethod.GET 指的是请求方式，查询
      * 此方法响应的是网页，所以不用写responseBody了 方法的返回值可以使ModelandView或者是String，如果用String，返回的就是视图的名字
      */
     @RequestMapping(path = "/index", method = RequestMethod.GET)

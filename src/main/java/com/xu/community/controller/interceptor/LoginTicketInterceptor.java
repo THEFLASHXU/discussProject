@@ -42,6 +42,7 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
         }
         return true;
     }
+
 	// 需要在模板引擎调用之前，加载用户的信息（如果已登录），因此选择在postHandle中处理，因为postHandle正好是在模板引擎加载之前执行的
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
