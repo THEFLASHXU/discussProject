@@ -50,7 +50,7 @@
                                      style="width:30px;"/>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item text-center" href="site/profile.html">个人主页</a>
+                                <a class="dropdown-item text-center" th:href="@{|/user/profile/${loginUser.id}|}">个人主页</a>
                                 <a class="dropdown-item text-center" th:href="@{/user/setting}">账号设置</a>
                                 <a class="dropdown-item text-center" th:href="@{/logout}">退出登录</a>
                                 <div class="dropdown-divider"></div>
@@ -135,7 +135,7 @@
                 <!--通过thymeleaf遍历后端传过来的model数据，访问discussPosts，每次遍历出来的结果都是一个map对象，
                 map:${discussPosts}中的map只是将这个map变量命名为map，冒号前面的map只是一个变量名-->
                 <li class="media pb-3 pt-3 mb-3 border-bottom" th:each="map:${discussPosts}">
-                    <a href="site/profile.html">
+                    <a th:href="@{|/user/profile/${map.user.id}|}">
                         <img th:src="${map.user.headerUrl}" class="mr-4 rounded-circle" alt="用户头像"
                              style="width:50px;height:50px;">
                     </a>
@@ -151,7 +151,9 @@
                                 th:text="${#dates.format(map.post.createTime,'yyyy-MM-dd HH:mm:ss')}">2019-04-15
                             15:32:18</b>
                             <ul class="d-inline float-right">
-                                <li class="d-inline ml-2">赞 11</li>
+                                <li class="d-inline ml-2">赞
+                                    <span th:text="${map.likeCount}">11</span>
+                                </li>
                                 <li class="d-inline ml-2">|</li>
                                 <li class="d-inline ml-2">回帖 <span th:text="${map.post.commentCount}">7</span></li>
                             </ul>

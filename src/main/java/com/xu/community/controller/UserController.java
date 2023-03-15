@@ -2,6 +2,7 @@ package com.xu.community.controller;
 
 import com.xu.community.annotation.LoginRequired;
 import com.xu.community.entity.User;
+import com.xu.community.service.LikeService;
 import com.xu.community.service.UserService;
 import com.xu.community.util.CommunityConstant;
 import com.xu.community.util.CommunityUtil;
@@ -42,6 +43,8 @@ public class UserController implements CommunityConstant {
     private UserService userService;
     @Autowired
     private HostHolder hostHolder;
+	@Autowired
+	private LikeService likeService;
 
     /**
      * 功能：跳转到用户信息设置的页面
@@ -117,5 +120,22 @@ public class UserController implements CommunityConstant {
 			logger.error("读取头像失败: " + e.getMessage());
 		}
 
+	}
+	/**
+	 * 功能：处理个人主页请求
+	 */
+	@RequestMapping(path = "/profile/{userId}",method = RequestMethod.GET)
+	public String getProfilePage(@PathVariable("userId") int userId, Model model) {
+		User user = userService.findUserById(userId);
+		if (user == null) {//防止用户不断地通过宰url上拼接userid试错，查询失败后就抛异常
+			throw new RuntimeException("该用户不存在!");
+		}
+		// 用户
+		model.addAttribute("user", user);
+		// 点赞数量
+		int likeCount = likeService.findUserLikeCount(userId);
+		model.addAttribute("likeCount", likeCount);
+
+		return "/site/profile";
 	}
 }

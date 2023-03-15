@@ -6,6 +6,7 @@ import com.xu.community.entity.Page;
 import com.xu.community.entity.User;
 import com.xu.community.service.CommentService;
 import com.xu.community.service.DiscussPostService;
+import com.xu.community.service.LikeService;
 import com.xu.community.service.UserService;
 import com.xu.community.util.CommunityConstant;
 import com.xu.community.util.CommunityUtil;
@@ -32,6 +33,8 @@ public class DiscussPostController implements CommunityConstant {
     private HostHolder hostHolder;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private LikeService likeService;
 
     /**
      * 功能：发布帖子 ，数据来自于jQuery发送过来的ajax数据。 @ResponseBody的作用其实是将java对象转为json格式的数据。
@@ -53,20 +56,28 @@ public class DiscussPostController implements CommunityConstant {
         return CommunityUtil.getJSONString(0, "发布成功");
     }
 
-	/**
-	 * 功能：查询并向前端返回帖子信息，评论信息，回复信息
-	 * @param page 分页信息,（像这种的自定义形参，会自动注入到modelandview中）
-	 */
+    /**
+     * 功能：查询并向前端返回帖子信息，评论信息，回复信息
+     * 
+     * @param page 分页信息,（像这种的自定义形参，会自动注入到modelandview中）
+     */
     @RequestMapping(path = "/detail/{discussPostId}", method = RequestMethod.GET)
     public String getDiscussPost(@PathVariable("discussPostId") int discussPostId, Model model, Page page) {
         // 查询帖子信息
         DiscussPost post = discussPostService.findDiscussPostById(discussPostId);
         model.addAttribute("post", post);
+        // 点赞数量
+        long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, discussPostId);
+        model.addAttribute("likeCount", likeCount);
+        // 点赞状态（判断下是否登录，未登录：显示未点赞 已登录：查询点赞状态）
+        int likeStatus = hostHolder.getUser() == null ? 0
+            : likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_POST, discussPostId);
+        model.addAttribute("likeStatus", likeStatus);
         // 查询作者信息
         User user = userService.findUserById(post.getUserId());
         model.addAttribute("user", user);
         // 评论分页信息
-        page.setLimit(5);//每页显示五条
+        page.setLimit(5);// 每页显示五条
         page.setStaticPath("/discuss/detail/" + discussPostId);
         page.setRows(post.getCommentCount());// 直接从帖子的数据库查询该帖子有多少评论，也可以进行连表查询，就是麻烦。
 
@@ -82,6 +93,13 @@ public class DiscussPostController implements CommunityConstant {
                 Map<String, Object> commentVo = new HashMap<>();
                 commentVo.put("comment", comment);
                 commentVo.put("user", userService.findUserById(comment.getUserId()));
+                // 点赞数量
+                likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_COMMENT, comment.getId());
+                commentVo.put("likeCount",likeCount);
+                // 点赞状态（判断下是否登录，未登录：显示未点赞 已登录：查询点赞状态）
+                likeStatus = hostHolder.getUser() == null ? 0
+                        : likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_COMMENT, comment.getId());
+                commentVo.put("likeStatus", likeStatus);
                 // 当前评论的回复列表
                 List<Comment> replyList =
                     commentService.findCommentByEntity(ENTITY_TYPE_COMMENT, comment.getId(), 0, Integer.MAX_VALUE);
@@ -95,12 +113,19 @@ public class DiscussPostController implements CommunityConstant {
                         // 获取回复的对象
                         User target = reply.getTargetId() == 0 ? null : userService.findUserById(reply.getTargetId());
                         replyVo.put("target", target);
+                        // 点赞数量
+                        likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_COMMENT, reply.getId());
+                        replyVo.put("likeCount",likeCount);
+                        // 点赞状态（判断下是否登录，未登录：显示未点赞 已登录：查询点赞状态）
+                        likeStatus = hostHolder.getUser() == null ? 0
+                                : likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_COMMENT, reply.getId());
+                        replyVo.put("likeStatus", likeStatus);
                         replyVoList.add(replyVo);
                     }
                 }
                 commentVo.put("replys", replyVoList);
                 int replyCount = commentService.findCommentCount(ENTITY_TYPE_COMMENT, comment.getId());
-                //回复的数量
+                // 回复的数量
                 commentVo.put("replyCount", replyCount);
                 commentVoList.add(commentVo);
             }

@@ -140,16 +140,16 @@ public class MessageController {
     @RequestMapping(path = "/letter/send", method = RequestMethod.POST)
     @ResponseBody
     public String sendLetter(String toName, String content) {
-        //根据用户名获取收件人用户信息
+        // 根据用户名获取收件人用户信息
         User target = userService.findUserByName(toName);
         if (target == null) {
             return CommunityUtil.getJSONString(1, "目标用户不存在!");
         }
 
         Message message = new Message();
-        message.setFromId(hostHolder.getUser().getId());//发件人id
-        message.setToId(target.getId());//收件人id
-        if (message.getFromId() < message.getToId()) {//根据小id拼大id的逻辑，拼接成会话id
+        message.setFromId(hostHolder.getUser().getId());// 发件人id
+        message.setToId(target.getId());// 收件人id
+        if (message.getFromId() < message.getToId()) {// 根据小id拼大id的逻辑，拼接成会话id
             message.setConversationId(message.getFromId() + "_" + message.getToId());
         } else {
             message.setConversationId(message.getToId() + "_" + message.getFromId());
@@ -158,6 +158,6 @@ public class MessageController {
         message.setCreateTime(new Date());
         messageService.addMessage(message);
 
-        return CommunityUtil.getJSONString(0);//返回代表正常发送的代码0.
+        return CommunityUtil.getJSONString(0);// 返回代表正常发送的代码0.
     }
 }
