@@ -67,7 +67,6 @@
         and from_id != 1
         and to_id = #{userId}
         <if test="conversationId!=null">
-            -- 动态拼接对话id，因为并不是一定会传递这个参数，当查询所有未读私信数量的时候就不需要，查每个对话中未读私信的数量时就需要
             and conversation_id = #{conversationId}
         </if>
     </select>
@@ -87,4 +86,48 @@
             #{id}
         </foreach>
     </update>
+    <!--查询某个主题下最新的通知-->
+    <select id="selectLatestNotice" resultType="Message">
+        select <include refid="selectFields"></include>
+        from message
+        where id in (
+        select max(id) from message
+        where status != 2
+        and from_id = 1
+        and to_id = #{userId}
+        and conversation_id = #{topic}
+        )
+    </select>
+    <!--查询某个主题所包含的通知数量-->
+    <select id="selectNoticeCount" resultType="int">
+        select count(id) from message
+        where status != 2
+        and from_id = 1
+        and to_id = #{userId}
+        and conversation_id = #{topic}
+    </select>
+    <!--查询未读的通知的数量
+        如果不传入topic字段进行查询，则查询所有主题下的未读消息
+    -->
+    <select id="selectNoticeUnreadCount" resultType="int">
+        select count(id) from message
+        where status = 0
+        and from_id = 1
+        and to_id = #{userId}
+        <if test="topic!=null">
+            and conversation_id = #{topic}
+        </if>
+    </select>
+
+    <!--查询某个主题所包含的通知列表,需要支持分页-->
+    <select id="selectNotices" resultType="Message">
+        select <include refid="selectFields"></include>
+        from message
+        where status != 2
+        and from_id = 1
+        and to_id = #{userId}
+        and conversation_id = #{topic}
+        order by create_time desc
+        limit #{offset}, #{limit}
+    </select>
 </mapper>

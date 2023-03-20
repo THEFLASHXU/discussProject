@@ -1,7 +1,9 @@
 package com.xu.community.controller;
 
+import com.xu.community.entity.Event;
 import com.xu.community.entity.Page;
 import com.xu.community.entity.User;
+import com.xu.community.event.EventProducer;
 import com.xu.community.service.FollowService;
 import com.xu.community.service.UserService;
 import com.xu.community.util.CommunityConstant;
@@ -26,6 +28,8 @@ public class FollowController implements CommunityConstant {
     private HostHolder hostHolder;
     @Autowired
     private UserService userService;
+    @Autowired
+    private EventProducer eventProducer;
 
     /**
      * 功能：处理关注请求
@@ -35,6 +39,16 @@ public class FollowController implements CommunityConstant {
     public String follow(int entityType, int entityId) {
         User user = hostHolder.getUser();
         followService.follow(user.getId(), entityType, entityId);
+
+        // 触发关注事件
+        Event event = new Event()
+                .setTopic(TOPIC_FOLLOW)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(entityType)
+                .setEntityId(entityId)
+                .setEntityUserId(entityId);
+        eventProducer.fireEvent(event);
+
         return CommunityUtil.getJSONString(0, "已关注!");
     }
 

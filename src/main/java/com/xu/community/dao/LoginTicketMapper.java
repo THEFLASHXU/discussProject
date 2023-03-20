@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
  * sql语句可以单独在xml文件中书写，也可以通过注解书写，本次练习通过注解书写
  */
 @Mapper
+@Deprecated//代表不推荐使用此类进行登陆凭证的操作了，已经使用redis重构了这里。
 public interface LoginTicketMapper {
     // 插入一条登陆数据
     @Insert({"insert into login_ticket(user_id,ticket,status,expired) ",
