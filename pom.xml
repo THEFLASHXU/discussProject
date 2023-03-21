@@ -5,7 +5,9 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.5</version>
+        <!--为了兼容es需要降低springboot的版本-->
+        <!--<version>2.7.5</version>-->
+        <version>2.1.5.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.xu</groupId>
@@ -14,7 +16,7 @@
     <name>community</name>
     <description>community</description>
     <properties>
-        <java.version>17</java.version>
+        <java.version>12</java.version>
     </properties>
     <dependencies>
         <dependency>
@@ -48,12 +50,12 @@
             <version>2.0.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
-            <scope>test</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--    <groupId>junit</groupId>-->
+        <!--    <artifactId>junit</artifactId>-->
+        <!--    <version>4.13.2</version>-->
+        <!--    <scope>test</scope>-->
+        <!--</dependency>-->
         <!--mysql依赖-->
         <dependency>
             <groupId>mysql</groupId>
@@ -65,11 +67,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
             <version>2.7.2</version>
+            <!--<version>2.1.5.RELEASE</version>-->
         </dependency>
         <!--commons包：用于帮助判断字符串和集合等数据空值的情况-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+            <!--<version>3.9</version>-->
             <version>3.10</version>
         </dependency>
         <!--kaptcha依赖：用于生成验证码-->
@@ -82,6 +86,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
+            <!--<version>1.2.58</version>-->
             <version>1.2.78</version>
         </dependency>
         <!--配置redis maven依赖-->
@@ -94,7 +99,12 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
-
+        <!--配置elasticsearch依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+            <!--<version>2.1.6.RELEASE</version>-->
+        </dependency>
     </dependencies>
 
     <build>

@@ -8,6 +8,7 @@ import com.xu.community.service.CommentService;
 import com.xu.community.service.DiscussPostService;
 import com.xu.community.util.CommunityConstant;
 import com.xu.community.util.HostHolder;
+import com.xu.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,6 +55,17 @@ public class CommentController implements CommunityConstant {
 			event.setEntityUserId(target.getUserId());
 		}
 		eventProducer.fireEvent(event);
+		//给帖子评论之后，需要重新写入发帖事件.因为需要在搜索的时候展示帖子所获得评论的数量.这个数据是要从es中获取，所以需要更新
+		if (comment.getEntityType() == ENTITY_TYPE_POST) {
+			// 触发发帖事件
+			event = new Event()
+					.setTopic(TOPIC_PUBLISH)
+					.setUserId(comment.getUserId())
+					.setEntityType(ENTITY_TYPE_POST)
+					.setEntityId(discussPostId);
+			eventProducer.fireEvent(event);
+		}
+
 
 		return "redirect:/discuss/detail/"+discussPostId;
 	}

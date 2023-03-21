@@ -23,6 +23,8 @@ public interface CommunityConstant {
     String TOPIC_LIKE = "like";
     // kafka的topic：关注
     String TOPIC_FOLLOW = "follow";
+    //kafka的topic：发帖
+    String TOPIC_PUBLISH = "publish";
     // 系统用户的id
     int SYSTEM_USER_ID=1;
 }

@@ -1,9 +1,7 @@
 package com.xu.community.controller;
 
-import com.xu.community.entity.Comment;
-import com.xu.community.entity.DiscussPost;
-import com.xu.community.entity.Page;
-import com.xu.community.entity.User;
+import com.xu.community.entity.*;
+import com.xu.community.event.EventProducer;
 import com.xu.community.service.CommentService;
 import com.xu.community.service.DiscussPostService;
 import com.xu.community.service.LikeService;
@@ -35,6 +33,8 @@ public class DiscussPostController implements CommunityConstant {
     private CommentService commentService;
     @Autowired
     private LikeService likeService;
+    @Autowired
+    private EventProducer eventProducer;
 
     /**
      * 功能：发布帖子 ，数据来自于jQuery发送过来的ajax数据。 @ResponseBody的作用其实是将java对象转为json格式的数据。
@@ -52,6 +52,15 @@ public class DiscussPostController implements CommunityConstant {
         post.setContent(content);
         post.setCreateTime(new Date());
         discussPostService.addDiscussPost(post);
+
+        //触发发帖事件
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(post.getId());
+        eventProducer.fireEvent(event);//发布发帖事件到kafka
+
         // 报错的情况，将来统一处理
         return CommunityUtil.getJSONString(0, "发布成功");
     }
