@@ -13,16 +13,20 @@
         user_id
         ,title,content,type,status,create_time,comment_count,score
     </sql>
-    <!--id是方法名字，resuleType是返回类型-->
+    <!--id是方法名字，resuleType是返回类型  orderMode=0按时间排，orderMode=1按热度分数排-->
     <select id="selectDiscussPosts" resultType="DiscussPost">
-        select
-        <include refid="selectFields"></include>
+        select <include refid="selectFields"></include>
         from discuss_post
         where status != 2
         <if test="userId!=0">
             and user_id = #{userId}
         </if>
-        order by type desc, create_time desc
+        <if test="orderMode==0">
+            order by type desc, create_time desc
+        </if>
+        <if test="orderMode==1">
+            order by type desc, score desc, create_time desc
+        </if>
         limit #{offset}, #{limit}
     </select>
 
@@ -51,5 +55,17 @@
         update discuss_post
         set comment_count=#{commentCount}
         where id = #{id}
+    </update>
+    <!--更新帖子的类型-->
+    <update id="updateType">
+        update discuss_post set type = #{type} where id = #{id}
+    </update>
+    <!--更新帖子的状态-->
+    <update id="updateStatus">
+        update discuss_post set status = #{status} where id = #{id}
+    </update>
+    <!--更新帖子的分数-->
+    <update id="updateScore">
+        update discuss_post set score = #{score} where id = #{id}
     </update>
 </mapper>

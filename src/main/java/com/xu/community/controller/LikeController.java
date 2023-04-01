@@ -9,6 +9,7 @@ import com.xu.community.util.CommunityUtil;
 import com.xu.community.util.HostHolder;
 import com.xu.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,7 +27,8 @@ public class LikeController implements CommunityConstant {
     private HostHolder hostHolder;
     @Autowired
     private EventProducer eventProducer;
-
+    @Autowired
+    private RedisTemplate redisTemplate;
     /**
      * 功能：处理对实体点赞的请求
      * 
@@ -51,7 +53,7 @@ public class LikeController implements CommunityConstant {
         map.put("likeStatus", likeStatus);
 
         // 触发点赞事件
-        if (likeStatus == 1) {
+        if (likeStatus == 1&&user.getId()!=entityUserId) {//给自己点赞不通知
             Event event =
                 new Event()
                         .setTopic(TOPIC_LIKE)
@@ -61,6 +63,11 @@ public class LikeController implements CommunityConstant {
                         .setEntityUserId(entityUserId)
                         .setData("postId", postId);
             eventProducer.fireEvent(event);
+        }
+        if (entityType == ENTITY_TYPE_POST) {//如果是给帖子点赞，则计算帖子分数
+            //计算帖子分数
+            String redisKey = RedisKeyUtil.getPostScoreKey();
+            redisTemplate.opsForSet().add(redisKey, postId);
         }
 
         return CommunityUtil.getJSONString(0, null, map);

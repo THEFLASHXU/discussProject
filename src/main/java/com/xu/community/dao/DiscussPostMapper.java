@@ -17,8 +17,9 @@ public interface DiscussPostMapper {
      * 这里是否传入userId进行查询需要看情况,在个人中心查看用户自己的帖子时需要靠userid查询，其他时候不需要，因此需要编写动态sql
      * offset：分页后当前页第一个帖子的行号
      * limit：每一页分多少个帖子
+     * orderMode:排序方式 0：按时间排  1：按热度排
      */
-    List<DiscussPost> selectDiscussPosts(int userId,int offset,int limit);
+    List<DiscussPost> selectDiscussPosts(int userId,int offset,int limit,int orderMode);
 
     /**
      * 功能：查询帖子数量
@@ -43,9 +44,21 @@ public interface DiscussPostMapper {
 
     /**
      * 更新帖子评论的数量
-     * @param id
-     * @param commentCount
-     * @return
      */
     int updateCommentCount(int id, int commentCount);
+
+    /**
+     * 功能：修改帖子的类型
+     */
+    int updateType(int id, int type);
+
+    /**
+     * 功能：修改帖子的状态
+     */
+    int updateStatus(int id, int status);
+
+    /**
+     * 修改帖子的分数
+     */
+    int updateScore(int id, double score);
 }

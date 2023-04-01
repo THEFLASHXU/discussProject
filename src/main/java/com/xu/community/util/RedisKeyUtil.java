@@ -15,6 +15,10 @@ public class RedisKeyUtil {
 	private static final String PREFIX_TICKET = "ticket";//登陆凭证
 	private static final String PREFIX_USER = "user";//用户信息
 
+	private static final String PREFIX_UV = "uv";//网站访问量
+	private static final String PREFIX_DAU = "dau";//活跃用户量
+	private static final String PREFIX_POST = "post";//帖子
+
     /**
      * 功能：定义某个实体的赞的key
 	 * key的结构:like:entity:entityType:entityId
@@ -79,5 +83,45 @@ public class RedisKeyUtil {
 	public static String getUserKey(int userId) {
 		return PREFIX_USER + SPLIT + userId;
 	}
+	// 单日UV
 
+	/**
+	 * 功能：构造代表网站单日访问量的key
+	 * key的结构：uv:20201029
+	 */
+	public static String getUVKey(String date) {
+		return PREFIX_UV + SPLIT + date;
+	}
+
+	/**
+	 * 功能：构造代表网站一段时间内访问量的key
+	 * key的结构：uv:20201029:20201112
+	 */
+	public static String getUVKey(String startDate, String endDate) {
+		return PREFIX_UV + SPLIT + startDate + SPLIT + endDate;
+	}
+
+	/**
+	 * 功能：构造代表单日活跃用户的key
+	 * key的结构：dau:20220102
+	 */
+	public static String getDAUKey(String date) {
+		return PREFIX_DAU + SPLIT + date;
+	}
+
+	/**
+	 * 功能：构造代表一段日期区间活跃用户的key
+	 * key的结构：dau:20220102:20220122
+	 */
+	public static String getDAUKey(String startDate, String endDate) {
+		return PREFIX_DAU + SPLIT + startDate + SPLIT + endDate;
+	}
+
+	/**
+	 * 功能：用于存储分数改变了的贴子集合的key
+	 * key的结构：post:score
+	 */
+	public static String getPostScoreKey() {
+		return PREFIX_POST + SPLIT + "score";
+	}
 }

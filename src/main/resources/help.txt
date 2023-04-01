@@ -1,0 +1,9 @@
+启动zookeeper：
+    cd c:\kafka\kafka_2.13-3.4.0
+    bin\windows\zookeeper-server-start.bat config\zookeeper.properties
+启动kafka：
+    cd c:\kafka\kafka_2.13-3.4.0
+    bin\windows\kafka-server-start.bat config\server.properties
+启动es
+    cd C:\elasticsearch\elasticsearch-6.4.3\bin
+    elasticsearch.bat

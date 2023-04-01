@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -26,9 +26,15 @@
                 <img src="http://static.nowcoder.com/images/img/icons/ico-discuss.png"/>
                 <span th:utext="${post.title}">备战春招，面试刷题跟他复习，一个月全搞定！</span>
                 <div class="float-right">
-                    <button type="button" class="btn btn-danger btn-sm">置顶</button>
-                    <button type="button" class="btn btn-danger btn-sm">加精</button>
-                    <button type="button" class="btn btn-danger btn-sm">删除</button>
+                    <!--隐藏框，作用是给button组件提供帖子id-->
+                    <input type="hidden" id="postId" th:value="${post.id}">
+                    <!--想要实现根据用户的权限判断是否展示“置顶”“加精”“删除”按钮，这需要用到thymeleaf-springsecurity的插件。该插件在头部引用。通过sec:authorize="hasAnyAuthority('xxxxx')" 判断该用户是否有xxxxx权限-->
+                    <button type="button" class="btn btn-danger btn-sm" id="topBtn"
+                            th:disabled="${post.type==1}" sec:authorize="hasAnyAuthority('moderator')">置顶</button>
+                    <button type="button" class="btn btn-danger btn-sm" id="wonderfulBtn"
+                            th:disabled="${post.status==1}" sec:authorize="hasAnyAuthority('moderator')">加精</button>
+                    <button type="button" class="btn btn-danger btn-sm" id="deleteBtn"
+                            th:disabled="${post.status==2}" sec:authorize="hasAnyAuthority('admin')">删除</button>
                 </div>
             </h6>
             <!-- 作者 -->
